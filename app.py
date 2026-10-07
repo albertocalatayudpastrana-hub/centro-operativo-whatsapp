@@ -2,22 +2,25 @@ from flask import Flask, request
 from datetime import datetime
 
 from whatsapp.guardar_mensaje import guardar_mensaje
-
-from unidades import UNIDADES_VALIDAS
 import re
 
 def detectar_unidad(remitente, mensaje):
 
-    texto = f"{remitente} {mensaje}"
+    coincidencia = re.search(
+        r'(?<!\d)(\d{3})(?!\d)',
+        remitente
+    )
 
-    numeros = re.findall(r"\b\d{2,3}\b", texto)
+    if coincidencia:
+        return coincidencia.group(1)
 
-    for numero in numeros:
+    coincidencia = re.search(
+        r'(?<!\d)(\d{3})(?!\d)',
+        mensaje
+    )
 
-        numero = numero.zfill(3)
-
-        if numero in UNIDADES_VALIDAS:
-            return numero
+    if coincidencia:
+        return coincidencia.group(1)
 
     return "000"
 
